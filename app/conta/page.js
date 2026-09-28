@@ -51,7 +51,7 @@ export default function Conta() {
 
       <div className="bloco">
         <h3>Privacidade</h3>
-        <p className="suave">Você autorizou o uso dos seus dados em {aceite} (termo versão {s.perfil.consentimento_versao}). Eles são usados apenas para calcular seu plano e seus alertas, e só você tem acesso a eles.</p>
+        <p className="suave">Você autorizou o uso dos seus dados em {aceite} (termo versão {s.perfil.consentimento_versao}). Eles são usados apenas para calcular seu plano e seus alertas, e só você tem acesso a eles. Conversas e fotos enviadas à assistente são processadas por um provedor de IA (como Google Gemini ou Anthropic Claude) e as fotos não ficam guardadas.</p>
         <button className="secundario" onClick={sair}>Sair da conta</button>
       </div>
 

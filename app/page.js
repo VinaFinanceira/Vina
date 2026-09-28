@@ -47,6 +47,12 @@ export default function Painel() {
           </li>
           <li><strong>Cadastre suas dívidas.</strong> <Link href="/dividas">Cadastrar a primeira dívida</Link></li>
         </ol>
+        <div className="atalhos">
+          <Link href="/vina" className="atalho principal">
+            <strong>Ou deixe a VINA fazer isso</strong>
+            <span>Conte por voz ou texto, ou mande a foto do contracheque e dos boletos. Ela cadastra e você só confirma.</span>
+          </Link>
+        </div>
       </>
     )
   }
@@ -97,6 +103,17 @@ export default function Painel() {
           <span>Faltam {dinheiro(calc.atual)}</span>
         </div>
       </section>
+
+      <div className="atalhos">
+        <Link href="/vina" className="atalho principal">
+          <strong>Falar com a VINA</strong>
+          <span>Conte uma dívida, um pagamento ou pergunte se dá para comprar algo</span>
+        </Link>
+        <Link href="/vina" className="atalho">
+          <strong>Mandar uma foto</strong>
+          <span>Boleto, fatura, extrato, comprovante ou contracheque</span>
+        </Link>
+      </div>
 
       <div className="numeros">
         <div className="numero"><div className="numero-valor">{dinheiro(calc.jurosMes)}</div><div className="numero-rotulo">de juros por mês, estimado</div></div>
@@ -159,10 +176,15 @@ export default function Painel() {
                       </div>
                     </>
                   ) : (
-                    <button className="pequeno secundario" onClick={() => {
-                      const d = dados.dividas.find((x) => x.id === i.dividaId)
-                      setMensagem({ dividaId: d.id, texto: mensagemNegociacao(d, perfil.nome) })
-                    }}>Escrever mensagem para o credor</button>
+                    <div className="linha-botoes">
+                      <Link className="botao pequeno" href={`/vina?p=${encodeURIComponent(`Me ajuda a negociar a dívida "${dados.dividas.find((x) => x.id === i.dividaId)?.nome}". Escreva uma mensagem para eu mandar ao credor pedindo desconto à vista ou um parcelamento que caiba no meu orçamento.`)}`}>
+                        Negociar com ajuda da VINA
+                      </Link>
+                      <button className="pequeno secundario" onClick={() => {
+                        const d = dados.dividas.find((x) => x.id === i.dividaId)
+                        setMensagem({ dividaId: d.id, texto: mensagemNegociacao(d, perfil.nome) })
+                      }}>Usar modelo pronto</button>
+                    </div>
                   )}
                 </div>
               )}

@@ -64,8 +64,57 @@ npm run dev                  # http://localhost:3000
 - **Confirmação de e-mail ligada**, com SMTP próprio.
 - **Autenticação de dois fatores (TOTP)**, que o Supabase oferece e pode ser ligada na próxima fase.
 
-## Próximas fases (do roadmap)
-- **Fase 2:** foto de contracheque, boleto e comprovante. Usa a API do Claude com visão, chamada por uma Edge Function do Supabase para a chave nunca ficar exposta no navegador. Tem custo por uso, pequeno por foto.
-- **Fase 3:** voz (Web Speech API, gratuita) e "Posso comprar isso?".
-- **Fase 4:** chat educativo e Radar com texto gerado por IA.
-- **Fase 5:** emblemas e notificações push.
+## Fase 2: IA (assistente VINA, fotos e voz)
+
+### O que entrou
+- **Aba VINA.** É uma conversa por texto, voz (microfone) ou foto/PDF. A assistente cadastra dívidas, pagamentos, renda, gastos e metas a partir do que a pessoa conta ou fotografa. Cada item aparece num cartão editável e **só é salvo quando a pessoa confirma**.
+- **Documentos que ela lê:**
+  - boleto, fatura ou carta de cobrança: cria a dívida ou atualiza a existente;
+  - extrato: encontra parcelas e empréstimos;
+  - comprovante: registra o pagamento na dívida certa;
+  - contracheque: registra a renda do mês;
+  - foto de produto: responde "posso comprar isso?".
+- **"Posso comprar isso?".** Mostra primeiro o caminho sem dívida nova, depois o caminho acelerado com o atraso real no plano (calculado, não chutado) e cria a meta de compra.
+- **Aba Metas.** Acompanha quanto já foi guardado para cada compra.
+- **Negociação.** A partir do Radar, a VINA escreve a mensagem para o credor.
+- **Limite diário por pessoa** (padrão: 40 mensagens), para proteger o seu custo.
+- **Termo de uso atualizado (versão 1.1).** Informa que as conversas passam por um provedor de IA. Todos aceitam de novo no próximo acesso. As fotos não são guardadas.
+
+### Passo a passo (com Google Gemini, gratuito para teste)
+1. **Supabase:** no SQL Editor, rode `supabase/02_fase2_ia.sql`.
+2. **Google AI Studio:**
+   - Acesse aistudio.google.com e entre com uma conta Google.
+   - Clique em **Get API key → Create API key**.
+   - Não precisa cadastrar cartão.
+3. **Vercel:** em **Settings → Environment Variables**, adicione como **Sensitive**, **sem** `NEXT_PUBLIC_`:
+   - `IA_PROVEDOR`, com o valor `gemini`;
+   - `GEMINI_API_KEY`, com a chave criada.
+   - Opcional: `GEMINI_MODEL`. O padrão é `gemini-2.5-flash`. Se o Google tirar esse modelo do ar, troque pelo Flash mais recente listado no AI Studio.
+4. **GitHub:** suba de novo o conteúdo desta pasta. A Vercel publica sozinha.
+
+### Limites da camada gratuita do Gemini
+- Algumas requisições por minuto e algumas centenas por dia (o número exato aparece no AI Studio). Serve para testar, não para muitas pessoas ao mesmo tempo.
+- **Na camada gratuita o Google pode usar os dados enviados para melhorar os produtos dele.** Teste só com seus próprios dados ou com dados fictícios. Antes de abrir para o público, faça uma destas duas coisas:
+  - ative o faturamento no Google (o uso fica pago e barato, e os dados deixam de ser usados para treino);
+  - ou troque para a Anthropic.
+
+### Trocar para a Anthropic (pago) depois
+1. Crie a conta em console.anthropic.com, adicione créditos e defina um limite de gasto mensal.
+2. Crie a chave de API.
+3. Na Vercel:
+   - mude `IA_PROVEDOR` para `anthropic`;
+   - adicione `ANTHROPIC_API_KEY` como **Sensitive**;
+   - faça um **Redeploy**.
+
+O código não muda.
+
+### Custo com a Anthropic (estimativa)
+- Mensagem de texto: na ordem de 1 a 2 centavos de dólar.
+- Foto: na ordem de 3 a 5 centavos de dólar.
+- Com `ANTHROPIC_MODEL=claude-haiku-4-5-20251001`, o custo cai mais ou menos pela metade.
+
+## Próximas fases
+- Notificações push de vencimento e resumo semanal do Radar.
+- Emblemas de progresso.
+- Plano Plus (assinatura) para cobrir o custo da IA.
+- Arredondamento automático via Pix: depende de Open Finance, que exige parceria com instituição autorizada pelo Banco Central.
